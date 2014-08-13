@@ -18,28 +18,42 @@ class Sync(models.Model):
     GET_CONTACT_SQL = 'SELECT "rapidsms_contact"."name", "rapidsms_contact"."language", ' \
                       '"rapidsms_contact"."occupation", "rapidsms_contact"."created_on",' \
                       ' "rapidsms_contact"."reporting_location_id", "rapidsms_contact"."birthdate", ' \
-                      '"rapidsms_contact"."gender", "rapidsms_contact"."village_name",' \
+                      '"rapidsms_contact"."gender", "rapidsms_contact"."village_name"' \
                       'FROM "rapidsms_contact" WHERE "rapidsms_contact"."id" = %d'
+
+    GET_GROUPS_SQL = 'SELECT "auth_group"."name" FROM "auth_group" INNER JOIN "rapidsms_contact_groups" ON ' \
+                     '("auth_group"."id" = "rapidsms_contact_groups"."group_id") ' \
+                     'WHERE "rapidsms_contact_groups"."contact_id" = %d'
 
     def get_connections(self, app):
         cur = app.connect().cursor()
-        cur.excute(self.GET_CONNECTIONS_SQL % self.last_pk)
+        cur.execute(self.GET_CONNECTIONS_SQL % self.last_pk)
         return cur.fetchall()
 
-    def get_contacts(self, app):
-        contacts = []
+    def get_groups(self, app, contact_pk):
+        cur = app.connect().cursor()
+        cur.execute(self.GET_GROUPS_SQL % contact_pk)
+        return [x[0] for x in cur.fetchall()]
+
+    def get_and_push_contacts(self, app):
         for row in self.get_connections(app):
             q = {'phone': row[0]}
             contact_pk = row[1]
             cur = app.connect().cursor()
-            cur.excute(self.GET_CONTACT_SQL % contact_pk)
+            cur.execute(self.GET_CONTACT_SQL % contact_pk)
             c = cur.fetchone()
             q.update({'name': c[0]})
             fields = {'language': c[1], 'occupation': c[2], 'birth_date': c[5], 'gender': c[6], 'village_name': c[7],
-                      'joined_ureport': row[2], 'id': row[3]}
+                      'id': row[3]}
             q['fields'] = fields
-            contacts.append(q)
-        return contacts
+            q['groups'] = self.get_groups(app, contact_pk)
+            q = json.dumps(q)
+            print q
+            response = self.post_request(app, q)
+            if not response == q:
+                print "Connection with phone: %s not synced" % q['phone']
+        self.last_pk = q['field']['id']
+        self.save()
 
     def post_request(self, app, contact):
         URL = 'https://api.rapidpro.io/api/v1/contacts.json'
@@ -49,12 +63,4 @@ class Sync(models.Model):
 
     def sync(self):
         app = UreportApp(self.app_name)
-        contacts = self.get_contacts(app)
-        for contact in contacts:
-            _contact = json.dumps(contact)
-            response = self.post_request(app, _contact)
-            if not response == _contact:
-                print "Connection with phone: %s not synced" % contact['phone']
-                #Todo Handle this scenario
-        self.last_pk = contact['field']['id']
-        self.save()
+        self.get_and_push_contacts(app)
