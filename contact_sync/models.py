@@ -43,7 +43,7 @@ class Sync(models.Model):
             cur.execute(self.GET_CONTACT_SQL % contact_pk)
             c = cur.fetchone()
             q.update({'name': c[0]})
-            fields = {'language': c[1], 'occupation': c[2], 'birth_date': c[5], 'gender': c[6], 'village_name': c[7],
+            fields = {'Language': c[1], 'Occupation': c[2], 'Birth Date': c[5], 'Gender': c[6], 'Village Name': c[7],
                       'id': row[3]}
             q['fields'] = fields
             q['groups'] = self.get_groups(app, contact_pk)
