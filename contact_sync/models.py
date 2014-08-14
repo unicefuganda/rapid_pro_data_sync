@@ -47,10 +47,12 @@ class Sync(models.Model):
                       'id': row[3]}
             q['fields'] = fields
             q['groups'] = self.get_groups(app, contact_pk)
-            q = json.dumps(q)
+            _q = json.dumps(q)
             print q
-            response = self.post_request(app, q)
-            if not response == q:
+            response = self.post_request(app, _q)
+            if not json.loads(response.json) == q:
+                print "Response: %s" % response.text
+                print "Request: %s" % q
                 print "Connection with phone: %s not synced" % q['phone']
         self.last_pk = q['field']['id']
         self.save()
