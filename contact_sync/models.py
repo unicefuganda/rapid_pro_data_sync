@@ -25,31 +25,34 @@ class Sync(models.Model):
                      '("auth_group"."id" = "rapidsms_contact_groups"."group_id") ' \
                      'WHERE "rapidsms_contact_groups"."contact_id" = %d'
 
-    def get_connections(self, app):
-        cur = app.connect().cursor()
+    def get_connections(self):
+        cur = self.app.connect().cursor()
         cur.execute(self.GET_CONNECTIONS_SQL % self.last_pk)
         return cur.fetchall()
 
-    def get_groups(self, app, contact_pk):
-        cur = app.connect().cursor()
+    def get_groups(self, contact_pk):
+        cur = self.app.connect().cursor()
         cur.execute(self.GET_GROUPS_SQL % contact_pk)
         return [x[0] for x in cur.fetchall()]
 
-    def get_and_push_contacts(self, app):
-        for row in self.get_connections(app):
-            q = {'phone': row[0]}
-            contact_pk = row[1]
-            cur = app.connect().cursor()
-            cur.execute(self.GET_CONTACT_SQL % contact_pk)
-            c = cur.fetchone()
-            q.update({'name': c[0]})
-            fields = {'Language': c[1], 'Occupation': c[2], 'Birth Date': c[5], 'Gender': c[6], 'Village Name': c[7],
-                      'id': row[3]}
-            q['fields'] = fields
-            q['groups'] = self.get_groups(app, contact_pk)
+    def get_contact(self, row):
+        q = {'phone': row[0]}
+        contact_pk = row[1]
+        cur = self.app.connect().cursor()
+        cur.execute(self.GET_CONTACT_SQL % contact_pk)
+        c = cur.fetchone()
+        q.update({'name': c[0]})
+        fields = {'Language': c[1], 'Occupation': c[2], 'Birth Date': c[5], 'Gender': c[6], 'Village Name': c[7],
+                  'id': row[3]}
+        q['fields'] = fields
+        q['groups'] = self.get_groups(contact_pk)
+        return q
+
+    def push_contacts(self):
+        for row in self.get_connections():
+            q = self.get_contact(row)
             _q = json.dumps(q)
-            print q
-            response = self.post_request(app, _q)
+            response = self.post_request(_q)
             if not json.loads(response.json) == q:
                 print "Response: %s" % response.text
                 print "Request: %s" % q
@@ -57,12 +60,13 @@ class Sync(models.Model):
         self.last_pk = q['field']['id']
         self.save()
 
-    def post_request(self, app, contact):
+    def post_request(self, contact):
         URL = 'https://api.rapidpro.io/api/v1/contacts.json'
         response = requests.post(URL, data=contact,
-                                 headers={'Content-type': 'application/json', 'Authorization': 'Token %s' % app.token})
+                                 headers={'Content-type': 'application/json',
+                                          'Authorization': 'Token %s' % self.app.token})
         return response.json
 
     def sync(self):
-        app = UreportApp(self.app_name)
-        self.get_and_push_contacts(app)
+        self.app = UreportApp(self.app_name)
+        self.push_contacts()

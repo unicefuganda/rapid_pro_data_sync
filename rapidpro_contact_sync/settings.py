@@ -17,13 +17,13 @@ DATABASES = {
 }
 
 UREPORT_APPS = {
-    # 'ureport': {
-    #     'TOKEN': 'API_TOKEN',
-    #     'ENGINE': 'psycopg2',
-    #     'NAME': 'ureport',
-    #     'HOST': 'localhost',
-    #     'USER': 'postgres',
-    # }
+    'ureport': {
+        'TOKEN': 'API_TOKEN',
+        'ENGINE': 'psycopg2',
+        'NAME': 'ureport',
+        'HOST': 'localhost',
+        'USER': 'postgres',
+    }
 }
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

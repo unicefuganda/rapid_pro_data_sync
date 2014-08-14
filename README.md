@@ -6,14 +6,20 @@ Syncing data from rapidsms ureport to rapidpro ureport(Migration)
 Configuration
 =============
 
-Add this config to UREPORT_APPS setting
+Add this config to **UREPORT_APPS** setting
 
-UREPORT_APPS = {
+`UREPORT_APPS = {
     'ureport': {
-         'TOKEN': 'API_TOKEN',
-         'ENGINE': 'psycopg2',
-         'NAME': 'ureport',
-         'HOST': 'localhost',
-         'USER': 'postgres',
+        'TOKEN': 'API_TOKEN',
+        'ENGINE': 'psycopg2',
+        'NAME': 'ureport',
+        'HOST': 'localhost',
+        'USER': 'postgres',
     }
-}
+}`
+
+
+Execution
+=========
+
+Run *python manage.py push_to_rapidpro --app=app_name*
