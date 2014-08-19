@@ -16,15 +16,26 @@ DATABASES = {
     }
 }
 
-UREPORT_APPS = {
-    'ureport': {
-        'TOKEN': 'API_TOKEN',
-        'ENGINE': 'psycopg2',
-        'NAME': 'ureport',
-        'HOST': 'localhost',
-        'USER': 'postgres',
-    }
-}
+# UREPORT_APPS = {
+#     'ureport': {
+#         'TOKEN': 'API_TOKEN',
+#         'ENGINE': 'psycopg2',
+#         'NAME': 'ureport',
+#         'HOST': 'localhost',
+#         'USER': 'postgres',
+#         'contact_fields': {
+#             'Name': 'name',
+#             'Language': 'language',
+#             'Occupation': 'occupation',
+#             'Created On': 'created_on',
+#             'Birth Date': 'birthdate',
+#             'Gender': 'gender',
+#             'Village Name': 'village_name'
+#         }
+#     }
+# }
+
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.

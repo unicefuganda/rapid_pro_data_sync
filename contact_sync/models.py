@@ -1,6 +1,8 @@
 import json
 from django.db import models
+import psycopg2.extras
 import requests
+import time
 from contact_sync.utils import UreportApp
 
 
@@ -25,6 +27,13 @@ class Sync(models.Model):
                      '("auth_group"."id" = "rapidsms_contact_groups"."group_id") ' \
                      'WHERE "rapidsms_contact_groups"."contact_id" = %d'
 
+    def _generate_contact_sql(self, contact_pk):
+        sql = 'SELECT "rapidsms_contact"."reporting_location_id"'
+        for v in self.app.contact_fields.values():
+            sql += ', "rapidsms_contact"."%s"' % v
+        sql += ' FROM "rapidsms_contact" WHERE "rapidsms_contact"."id" = %d' % contact_pk
+        return sql
+
     def get_connections(self):
         cur = self.app.connect().cursor()
         cur.execute(self.GET_CONNECTIONS_SQL % self.last_pk)
@@ -38,25 +47,33 @@ class Sync(models.Model):
     def get_contact(self, row):
         q = {'phone': row[0]}
         contact_pk = row[1]
-        cur = self.app.connect().cursor()
-        cur.execute(self.GET_CONTACT_SQL % contact_pk)
-        c = cur.fetchone()
-        q.update({'name': c[0]})
-        fields = {'Language': c[1], 'Occupation': c[2], 'Birth Date': c[5], 'Gender': c[6], 'Village Name': c[7],
-                  'id': row[3]}
+        cur = self.app.connect().cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute(self._generate_contact_sql(contact_pk))
+        c = dict(cur.fetchone())
+        q.update({'name': c.pop('name')})
+        fields = {}
+        for k, v in self.app.contact_fields.items():
+            try:
+                fields[k] = c[v]
+            except KeyError as e:
+                #Name is taken out of results dict so it will always raise a key error so I'll just pass
+                pass
         q['fields'] = fields
         q['groups'] = self.get_groups(contact_pk)
         return q
 
-    def push_contacts(self):
+    def push_contacts(self, rate_limit=0):
         for row in self.get_connections():
             q = self.get_contact(row)
             _q = json.dumps(q)
+            print _q
             response = self.post_request(_q)
             if not json.loads(response.json) == q:
                 print "Response: %s" % response.text
                 print "Request: %s" % q
                 print "Connection with phone: %s not synced" % q['phone']
+            if rate_limit:
+                time.sleep(rate_limit)
         self.last_pk = q['field']['id']
         self.save()
 
@@ -67,6 +84,6 @@ class Sync(models.Model):
                                           'Authorization': 'Token %s' % self.app.token})
         return response.json
 
-    def sync(self):
+    def sync(self, rate_limit):
         self.app = UreportApp(self.app_name)
-        self.push_contacts()
+        self.push_contacts(rate_limit=rate_limit)
