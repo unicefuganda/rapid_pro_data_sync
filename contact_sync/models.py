@@ -17,12 +17,6 @@ class Sync(models.Model):
                           'FROM "rapidsms_connection" WHERE "rapidsms_connection"."id" > %d  ' \
                           'ORDER BY "rapidsms_connection"."id" ASC'
 
-    GET_CONTACT_SQL = 'SELECT "rapidsms_contact"."name", "rapidsms_contact"."language", ' \
-                      '"rapidsms_contact"."occupation", "rapidsms_contact"."created_on",' \
-                      ' "rapidsms_contact"."reporting_location_id", "rapidsms_contact"."birthdate", ' \
-                      '"rapidsms_contact"."gender", "rapidsms_contact"."village_name"' \
-                      'FROM "rapidsms_contact" WHERE "rapidsms_contact"."id" = %d'
-
     GET_GROUPS_SQL = 'SELECT "auth_group"."name" FROM "auth_group" INNER JOIN "rapidsms_contact_groups" ON ' \
                      '("auth_group"."id" = "rapidsms_contact_groups"."group_id") ' \
                      'WHERE "rapidsms_contact_groups"."contact_id" = %d'
