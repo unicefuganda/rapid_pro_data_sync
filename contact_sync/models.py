@@ -52,7 +52,7 @@ class Sync(models.Model):
         for k, v in self.app.contact_fields.items():
             try:
                 if c[v] == None:
-                    fields[k] = "Empty Field"
+                    fields[k] = " "
                 else:
                     fields[k] = c[v]
             except KeyError as e:
