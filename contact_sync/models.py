@@ -41,6 +41,9 @@ class Sync(models.Model):
     def get_contact(self, row):
         q = {'phone': row[0]}
         contact_pk = row[1]
+        print "Contact Pk ===>  ", contact_pk
+        if not contact_pk:
+            return None
         cur = self.app.connect().cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute(self._generate_contact_sql(contact_pk))
         c = dict(cur.fetchone())
@@ -58,7 +61,10 @@ class Sync(models.Model):
 
     def push_contacts(self, rate_limit=0):
         for row in self.get_connections():
-            q = self.get_contact(row)
+            x = self.get_contact(row)
+            if not x:
+                continue
+            q = x
             _q = json.dumps(q)
             print _q
             response = self.post_request(_q)
