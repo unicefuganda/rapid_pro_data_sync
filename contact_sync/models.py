@@ -39,7 +39,7 @@ class Sync(models.Model):
         return [x[0] for x in cur.fetchall()]
 
     def get_contact(self, row):
-        q = {'phone': row[0]}
+        q = {'phone': "+"+row[0]}
         contact_pk = row[1]
         print "Contact Pk ===>  ", contact_pk
         if not contact_pk:
@@ -51,7 +51,10 @@ class Sync(models.Model):
         fields = {}
         for k, v in self.app.contact_fields.items():
             try:
-                fields[k] = c[v]
+                if c[v] == None:
+                    fields[k] = "Empty Field"
+                else:
+                    fields[k] = c[v]
             except KeyError as e:
                 #Name is taken out of results dict so it will always raise a key error so I'll just pass
                 pass
@@ -69,9 +72,9 @@ class Sync(models.Model):
             print _q
             print _q
             response = self.post_request(_q)
-            if not json.loads(response) == q:
+            if not json.loads(response.text) == q:
                 print "Response: %s" % response.text
-                print "Request: %s" % q
+                print "Request: %s" % _q
                 print "Connection with phone: %s not synced" % q['phone']
             if rate_limit:
                 time.sleep(rate_limit)
@@ -83,7 +86,7 @@ class Sync(models.Model):
         response = requests.post(URL, data=contact,
                                  headers={'Content-type': 'application/json',
                                           'Authorization': 'Token %s' % self.app.token})
-        return unicode(response.json())
+        return response
 
     def sync(self, rate_limit):
         self.app = UreportApp(self.app_name)
