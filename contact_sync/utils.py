@@ -1,3 +1,5 @@
+import json
+from datetime import date
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 import psycopg2
@@ -7,6 +9,14 @@ __author__ = 'kenneth'
 
 class MissingArgumentError(Exception):
     pass
+
+
+class DateEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj, date):
+            return obj.strftime('%Y-%m-%dT%H:%M:%S.%s%Z')
+        return json.JSONEncoder.default(self, obj)
 
 
 class UreportApp(object):

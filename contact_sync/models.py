@@ -3,7 +3,7 @@ from django.db import models
 import psycopg2.extras
 import requests
 import time
-from contact_sync.utils import UreportApp
+from contact_sync.utils import UreportApp, DateEncoder
 
 
 class Sync(models.Model):
@@ -65,7 +65,8 @@ class Sync(models.Model):
             if not x:
                 continue
             q = x
-            _q = json.dumps(q)
+            _q = json.dumps(q, cls=DateEncoder)
+            print _q
             print _q
             response = self.post_request(_q)
             if not json.loads(response.json) == q:
