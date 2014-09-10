@@ -72,7 +72,7 @@ class Sync(models.Model):
             print _q
             print _q
             response = self.post_request(_q)
-            if not json.loads(response.text) == q:
+            if not 'modified_on' in json.loads(response.text):
                 print "Response: %s" % response.text
                 print "Request: %s" % _q
                 print "Connection with phone: %s not synced" % q['phone']
