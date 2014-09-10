@@ -18,8 +18,8 @@ class DateEncoder(json.JSONEncoder):
             return obj.strftime('%Y-%m-%dT%H:%M:%S.%s%Z')
         if obj == None:
             return "Empty Field"
-        if isinstance(obj, int):
-            return str(obj)
+        if str(obj).isdigit():
+            return '+%s' % str(obj)
         return json.JSONEncoder.default(self, obj)
 
 
