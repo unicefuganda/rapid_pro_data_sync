@@ -16,6 +16,10 @@ class DateEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, date):
             return obj.strftime('%Y-%m-%dT%H:%M:%S.%s%Z')
+        if obj == None:
+            return "Empty Field"
+        if isinstance(obj, int):
+            return str(obj)
         return json.JSONEncoder.default(self, obj)
 
 

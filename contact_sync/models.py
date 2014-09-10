@@ -83,7 +83,7 @@ class Sync(models.Model):
         response = requests.post(URL, data=contact,
                                  headers={'Content-type': 'application/json',
                                           'Authorization': 'Token %s' % self.app.token})
-        return response.json()
+        return unicode(response.json())
 
     def sync(self, rate_limit):
         self.app = UreportApp(self.app_name)
