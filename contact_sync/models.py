@@ -78,7 +78,7 @@ class Sync(models.Model):
                 print "Connection with phone: %s not synced" % q['phone']
             if rate_limit:
                 time.sleep(rate_limit)
-        self.last_pk = q['field']['id']
+        self.last_pk = q['fields']['id']
         self.save()
 
     def post_request(self, contact):
