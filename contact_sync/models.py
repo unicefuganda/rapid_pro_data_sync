@@ -64,20 +64,23 @@ class Sync(models.Model):
 
     def push_contacts(self, rate_limit=0):
         for row in self.get_connections():
-            x = self.get_contact(row)
-            if not x:
-                continue
-            q = x
-            _q = json.dumps(q, cls=DateEncoder)
-            print _q
-            print _q
-            response = self.post_request(_q)
-            if not 'modified_on' in json.loads(response.text):
-                print "Response: %s" % response.text
-                print "Request: %s" % _q
-                print "Connection with phone: %s not synced" % q['phone']
-            if rate_limit:
-                time.sleep(rate_limit)
+            try:
+                x = self.get_contact(row)
+                if not x:
+                    continue
+                q = x
+                _q = json.dumps(q, cls=DateEncoder)
+                print _q
+                print _q
+                response = self.post_request(_q)
+                if not 'modified_on' in json.loads(response.text):
+                    print "Response: %s" % response.text
+                    print "Request: %s" % _q
+                    print "Connection with phone: %s not synced" % q['phone']
+                if rate_limit:
+                    time.sleep(rate_limit)
+            except Exception as e:
+                print e
         self.last_pk = q['fields']['id']
         self.save()
 
