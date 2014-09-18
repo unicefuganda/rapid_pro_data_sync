@@ -36,7 +36,7 @@ class Sync(models.Model):
     def get_groups(self, contact_pk):
         cur = self.app.connect().cursor()
         cur.execute(self.GET_GROUPS_SQL % contact_pk)
-        return [x[0] for x in cur.fetchall()]
+        return [x[0] for x in cur.fetchall() if x[0].strip()]
 
     def get_contact(self, row):
         q = {'phone': "+"+row[0]}
