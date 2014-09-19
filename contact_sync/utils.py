@@ -39,3 +39,6 @@ class UreportApp(object):
                 print e
         else:
             print "Adaptor not supported"
+
+
+LANGUAGES_CODE = {'fr': 'fra', 'ki': 'run', 'en': 'eng'}

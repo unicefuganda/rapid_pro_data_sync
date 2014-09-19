@@ -3,7 +3,7 @@ from django.db import models
 import psycopg2.extras
 import requests
 import time
-from contact_sync.utils import UreportApp, DateEncoder
+from contact_sync.utils import UreportApp, DateEncoder, LANGUAGES_CODE
 
 
 class Sync(models.Model):
@@ -55,6 +55,9 @@ class Sync(models.Model):
                     fields[k] = " "
                 else:
                     fields[k] = c[v]
+                    if fields[k].lower() == 'language' and c[v].strip():
+                            fields[k] = LANGUAGES_CODE.get(c[v], c[v])
+
             except KeyError as e:
                 #Name is taken out of results dict so it will always raise a key error so I'll just pass
                 pass
