@@ -55,7 +55,7 @@ class Sync(models.Model):
                     fields[k] = " "
                 else:
                     fields[k] = c[v]
-                    if fields[k].lower() == 'language' and c[v].strip():
+                    if k.lower() == 'language' and c[v].strip():
                             fields[k] = LANGUAGES_CODE.get(c[v], c[v])
 
             except KeyError as e:
