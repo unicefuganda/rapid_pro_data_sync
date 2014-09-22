@@ -16,21 +16,26 @@ DATABASES = {
     }
 }
 
+TEXT_TYPE, DECIMAL_TYPE, DATETIME_TYPE, STATE_TYPE, DISTRICT_TYPE = 'T', 'N', 'D', 'S', 'I'
+
 # UREPORT_APPS = {
 #     'ureport': {
-#         'TOKEN': 'API_TOKEN',
+#         'TOKEN': 'API_KEY HERE',
 #         'ENGINE': 'psycopg2',
 #         'NAME': 'ureport',
 #         'HOST': 'localhost',
 #         'USER': 'postgres',
 #         'contact_fields': {
-#             'Name': 'name',
-#             'Language': 'language',
-#             'Occupation': 'occupation',
-#             'Created On': 'created_on',
-#             'Birth Date': 'birthdate',
-#             'Gender': 'gender',
-#             'Village Name': 'village_name'
+#             'Name': {'key': 'name', 'type': TEXT_TYPE},
+#             'Language': {'key': 'language', 'type': TEXT_TYPE},
+#             'Occupation': {'key':'occupation', 'type': TEXT_TYPE},
+#             'Created On': {'key': 'created_on', 'type': DATETIME_TYPE},
+#             'Birth Date': {'key': 'birthdate', 'type': DATETIME_TYPE},
+#             'Gender': {'key': 'gender', 'type': TEXT_TYPE},
+#             'Village Name': {'key':'village_name', 'type': TEXT_TYPE}
+#         },
+#         'locations': {
+#             'District': {'key': 'district', 'type': DISTRICT_TYPE},
 #         }
 #     }
 # }
