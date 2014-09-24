@@ -76,9 +76,10 @@ class Sync(models.Model):
                 if c[v['key']] == None:
                     fields[k] = " "
                 else:
-                    fields[k] = c[v['key']]
                     if k.lower() == 'language' and c[v['key']].strip():
                         q['language'] = LANGUAGES_CODE.get(c[v['key']], c[v['key']])
+                    else:
+                        fields[k] = c[v['key']]
 
             except KeyError as e:
                 # Name is taken out of results dict so it will always raise a key error so I'll just pass
