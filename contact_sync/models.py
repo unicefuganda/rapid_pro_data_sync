@@ -45,7 +45,7 @@ class Sync(models.Model):
     def get_location(self, contact, location_type):
         cur = self.app.connect().cursor()
         cur.execute(self.GET_LOCATION_SQL % (location_type, contact))
-        return cur.fetchone()
+        return cur.fetchone() or [' ']
 
     def update_fields(self):
         fields = self.get_available_fields()
@@ -78,7 +78,7 @@ class Sync(models.Model):
                 else:
                     fields[k] = c[v['key']]
                     if k.lower() == 'language' and c[v['key']].strip():
-                        fields[v['key']] = LANGUAGES_CODE.get(c[v['key']], c[v['key']])
+                        q['language'] = LANGUAGES_CODE.get(c[v['key']], c[v['key']])
 
             except KeyError as e:
                 # Name is taken out of results dict so it will always raise a key error so I'll just pass
