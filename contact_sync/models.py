@@ -70,16 +70,15 @@ class Sync(models.Model):
         cur.execute(self._generate_contact_sql(contact_pk))
         c = dict(cur.fetchone())
         q.update({'name': c.pop('name')})
+        lang = c.pop('language')
+        q.update({'language': LANGUAGES_CODE.get(lang, lang)})
         fields = {}
         for k, v in self.app.contact_fields.items():
             try:
                 if c[v['key']] == None:
                     fields[k] = " "
                 else:
-                    if k.lower() == 'language' and c[v['key']].strip():
-                        q['language'] = LANGUAGES_CODE.get(c[v['key']], c[v['key']])
-                    else:
-                        fields[k] = c[v['key']]
+                    fields[k] = c[v['key']]
 
             except KeyError as e:
                 # Name is taken out of results dict so it will always raise a key error so I'll just pass
@@ -111,6 +110,11 @@ class Sync(models.Model):
                     print "Response: %s" % response.text
                     print "Request: %s" % _q
                     print "Connection with phone: %s not synced" % q['phone']
+                else:
+                    old, new = set(x['groups']), set(json.loads(response.text)['groups'])
+                    print 'Request Groups =========>', old
+                    print 'Response Groups ========>', new
+                    print (old & new) == old
                 if rate_limit:
                     time.sleep(rate_limit)
             except Exception as e:
