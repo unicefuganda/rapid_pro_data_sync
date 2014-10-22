@@ -95,6 +95,7 @@ class Sync(models.Model):
         return q
 
     def push_contacts(self, rate_limit=0):
+        f = open('gropus_tracking.log', 'w')
         self.update_fields()
         for row in self.get_connections():
             print "pk=======>", row[3]
@@ -114,7 +115,8 @@ class Sync(models.Model):
                     old, new = set(x['groups']), set(json.loads(response.text)['groups'])
                     print 'Request Groups =========>', old
                     print 'Response Groups ========>', new
-                    print (old & new) == old
+                    if not (old & new) == old:
+                        f.write('Groups Not the same %s: %s\n' % (str(list(old)), response.text))
                 if rate_limit:
                     time.sleep(rate_limit)
             except Exception as e:
