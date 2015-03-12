@@ -26,10 +26,10 @@ class Sync(models.Model):
                        ' WHERE ("locations_location"."type_id" = \'%s\' AND "rapidsms_contact"."id" = %d)'
 
     def _generate_contact_sql(self, contact_pk):
-        sql = 'SELECT "rapidsms_contact"."reporting_location_id"'
+        sql = 'SELECT "education_emisreporter"."reporting_location_id"'
         for v in self.app.contact_fields.values():
-            sql += ', "rapidsms_contact"."%s"' % v['key']
-        sql += ' FROM "rapidsms_contact" WHERE "rapidsms_contact"."id" = %d' % contact_pk
+            sql += ', "education_emisreporter"."%s"' % v['key']
+        sql += ' FROM "education_emisreporter" WHERE "education_emisreporter"."id" = %d' % contact_pk
         return sql
 
     def get_connections(self):

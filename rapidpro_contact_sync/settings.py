@@ -18,27 +18,27 @@ DATABASES = {
 
 TEXT_TYPE, DECIMAL_TYPE, DATETIME_TYPE, STATE_TYPE, DISTRICT_TYPE = 'T', 'N', 'D', 'S', 'I'
 
-# UREPORT_APPS = {
-#     'ureport': {
-#         'TOKEN': 'API_KEY HERE',
-#         'ENGINE': 'psycopg2',
-#         'NAME': 'ureport',
-#         'HOST': 'localhost',
-#         'USER': 'postgres',
-#         'contact_fields': {
-#             'Name': {'key': 'name', 'type': TEXT_TYPE},
-#             'Language': {'key': 'language', 'type': TEXT_TYPE},
-#             'Occupation': {'key':'occupation', 'type': TEXT_TYPE},
-#             'Created On': {'key': 'created_on', 'type': DATETIME_TYPE},
-#             'Birth Date': {'key': 'birthdate', 'type': DATETIME_TYPE},
-#             'Gender': {'key': 'gender', 'type': TEXT_TYPE},
-#             'Village Name': {'key':'village_name', 'type': TEXT_TYPE}
-#         },
-#         'locations': {
-#             'District': {'key': 'district', 'type': DISTRICT_TYPE},
-#         }
-#     }
-# }
+UREPORT_APPS = {
+    'ureport': {
+        'TOKEN': 'API_KEY HERE',
+        'ENGINE': 'psycopg2',
+        'NAME': 'edtrac',
+        'HOST': 'dbserver',
+        'USER': 'postgres',
+        'PORT': 6543,
+        'contact_fields': {
+            'Name': {'key': 'name', 'type': TEXT_TYPE},
+            'Language': {'key': 'language', 'type': TEXT_TYPE},
+            'Birth Date': {'key': 'birthdate', 'type': DATETIME_TYPE},
+            'Last Reporting Date': {'key': 'last_reporting_date', 'type': DATETIME_TYPE},
+            'Gender': {'key': 'gender', 'type': TEXT_TYPE},
+            'Grade': {'key': 'grade', 'type': TEXT_TYPE}
+        },
+        'locations': {
+            'District': {'key': 'district', 'type': DISTRICT_TYPE},
+        }
+    }
+}
 
 
 # Local time zone for this installation. Choices can be found here:
